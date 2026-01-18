@@ -28,7 +28,7 @@ class Settings(BaseSettings):
     @property
     def cors_origins(self) -> List[str]:
         """Parse CORS origins from comma-separated string"""
-        return [origin.strip() for origin in self.ALLOWED_ORIGINS.split(",")]
+        return [origin.strip() for origin in self.ALLOWED_ORIGINS.split(",") if not origin.strip().startswith("https://*.")]
     
     class Config:
         env_file = ".env"
