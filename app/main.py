@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.core.logger import logger
 from app.core.database import test_connection
-from app.api import insights, health
+from app.api import insights, health, predictions
 
 
 @asynccontextmanager
@@ -50,6 +50,7 @@ def create_application() -> FastAPI:
     # Include routers
     app.include_router(health.router, prefix=settings.API_V1_PREFIX, tags=["health"])
     app.include_router(insights.router, prefix=settings.API_V1_PREFIX, tags=["insights"])
+    app.include_router(predictions.router, prefix=settings.API_V1_PREFIX, tags=["predictions"])
     
     return app
 

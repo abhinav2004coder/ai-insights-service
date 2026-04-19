@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import List, Optional
+from typing import List, Optional, Dict
 from datetime import datetime
 from enum import Enum
 
@@ -109,3 +109,74 @@ class PredictionResponse(BaseModel):
     predictedAmount: float
     confidence: float
     period: str
+
+
+class ConfidenceInterval(BaseModel):
+    """Confidence interval for predictions"""
+    lower: float
+    upper: float
+
+
+class MonthlyPrediction(BaseModel):
+    """Monthly prediction data"""
+    month: str
+    predicted_income: Optional[float] = None
+    predicted_expenditure: Optional[float] = None
+    linear_prediction: Optional[float] = None
+    rf_prediction: Optional[float] = None
+    confidence_interval: Optional[ConfidenceInterval] = None
+    amount: Optional[float] = None  # For expenditure
+
+
+class CategoryExpenditurePrediction(BaseModel):
+    """Category-wise expenditure prediction"""
+    predictions: List[MonthlyPrediction]
+    historical_average: float
+    predicted_average: float
+    total_predicted: float
+    trend: str
+
+
+class IncomePredictionRequest(BaseModel):
+    """Request for income prediction"""
+    userId: str
+    forecast_months: int = Field(default=6, ge=1, le=12)
+    use_sample_data: bool = True
+
+
+class IncomePredictionResponse(BaseModel):
+    """Income prediction response"""
+    predictions: List[MonthlyPrediction]
+    historical_average: float
+    predicted_average: float
+    growth_trend: float
+    total_predicted_income: float
+    confidence_score: float
+    insights: List[str]
+    sample_data_used: bool
+
+
+class ExpenditurePredictionRequest(BaseModel):
+    """Request for expenditure prediction"""
+    userId: str
+    forecast_months: int = Field(default=6, ge=1, le=12)
+    by_category: bool = True
+    use_sample_data: bool = True
+
+
+class OverallExpenditurePrediction(BaseModel):
+    """Overall expenditure prediction"""
+    month: str
+    total_expenditure: float
+
+
+class ExpenditurePredictionResponse(BaseModel):
+    """Expenditure prediction response"""
+    category_predictions: Optional[Dict[str, CategoryExpenditurePrediction]] = None
+    overall_predictions: List[OverallExpenditurePrediction]
+    historical_average_total: float
+    predicted_average_total: float
+    total_predicted_expenditure: float
+    insights: List[str]
+    confidence_score: float
+    sample_data_used: bool
